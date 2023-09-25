@@ -1,2 +1,4 @@
 # AdvancedCpp
-Решение задач по курсу C++ на кафедре ABBYY в МФТИ
+
+Хузин Тимур Б05-031
+[Telegram](https://t.me/unkle_ayy)
