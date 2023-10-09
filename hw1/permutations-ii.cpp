@@ -31,16 +31,16 @@ private:
             return;
         }
 
-        for (auto it = freq_by_nums.begin(); it != freq_by_nums.end(); ++it) {
+        for (auto& entry: freq_by_nums) {
             // проверяем, что все еще можем использовать число
-            if (it->second > 0) {
-                it->second--;
+            if (entry.second > 0) {
+                entry.second--;
 
                 // добавляем число в перестановку и повторяем алгоритм для поддерева
-                permutation[idx] = it->first;
+                permutation[idx] = entry.first;
                 dfs(permutation, idx + 1, freq_by_nums, res);
 
-                it->second++;
+                entry.second++;
             }
         }
 
