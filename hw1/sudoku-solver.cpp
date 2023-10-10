@@ -46,7 +46,7 @@ private:
     }
 
     // проверяем, что можем поставить число num в клетку с координатами (r, c)
-    bool validSell(vector<vector<char>> board, int r, int c, char num) {
+    bool validSell(const vector<vector<char>>& board, int r, int c, char num) {
         for (int idx = 0; idx < 9; ++idx) {
             // проверяем, что по горизонтали и вертикали еще нет такого числа
             if (board[r][idx] == num || board[idx][c] == num) {
