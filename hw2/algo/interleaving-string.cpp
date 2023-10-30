@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class Solution {
+class OldSolution {
 public:
     bool isInterleave(string s1, string s2, string s3) {
         int len1 = s1.length();
@@ -39,6 +39,41 @@ public:
         }
 
         return isParse[len1][len2];
+    }
+};
+
+class Solution {
+public:
+    bool isInterleave(string s1, string s2, string s3) {
+        int len1 = s1.length();
+        int len2 = s2.length();
+        int len3 = s3.length();
+
+        // быстро отсекаем вариант, когда такое невозможно
+        if (len1 + len2 != len3) {
+            return false;
+        }
+
+        vector<bool> isParse(len2 + 1);
+        isParse[0] = true;
+
+        for (int idx1 = 0; idx1 <= len1; ++idx1) {
+            for (int idx2 = 0; idx2 <= len2; ++idx2) {
+                // индекс текущей буквы в s3
+                int idx3 = idx1 + idx2 - 1;
+
+                // если текущая буква s3 совпадает с буквой в s1, то обновляем ответ
+                if (idx1 > 0) {
+                    isParse[idx2] = isParse[idx2] && s1[idx1 - 1] == s3[idx3];
+                }
+                // если текущая буква s3 совпадает с буквой в s2, то обновляем ответ
+                if (idx2 > 0) {
+                    isParse[idx2] = isParse[idx2] || (isParse[idx2 - 1] && s2[idx2 - 1] == s3[idx3]);
+                }
+            }
+        }
+
+        return isParse[len2];
     }
 };
 
