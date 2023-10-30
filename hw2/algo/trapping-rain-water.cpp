@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class Solution {
+class OldSolution {
 public:
 
     // для каждого столба найдем самые высокие столбы слева и справа от него
@@ -42,6 +42,52 @@ public:
         return res;
     }
 };
+
+
+class Solution {
+public:
+
+    // идея такая же, как и в OldSolution, но можно не хранить
+    // два вектора, а использовать два указателя
+    int trap(vector<int> &height) {
+        int n = height.size();
+        if (n == 0) {
+            return 0;
+        }
+
+        // указатели
+        int left_idx = 0;
+        int right_idx = n - 1;
+
+        // значения самых высоких столбов от текущего
+        int left_max = 0;
+        int right_max = 0;
+
+        int res = 0;
+        while (left_idx <= right_idx) {
+            if (left_max < right_max) {
+                // добавляем в ответ разницу между текущим столбом
+                // и максимальным столбом слева
+                res += max(0, left_max - height[left_idx]);
+
+                // обновляем максимум и сдвигаем указатель
+                left_max = max(left_max, height[left_idx]);
+                ++left_idx;
+            } else {
+                // добавляем в ответ разницу между текущим столбом
+                // и максимальным столбом справа
+                res += max(0, right_max - height[right_idx]);
+
+                // обновляем максимум и сдвигаем указатель
+                right_max = max(right_max, height[right_idx]);
+                --right_idx;
+            }
+        }
+
+        return res;
+    }
+};
+
 
 int main() {
     auto sol = Solution();
