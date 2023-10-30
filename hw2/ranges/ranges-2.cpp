@@ -14,13 +14,6 @@ auto sum(InputIter begin, InputIter end) {
     return sum;
 }
 
-template<typename InputIter>
-auto count(InputIter begin, InputIter end) {
-    auto count = 0;
-    for (auto iter{begin}; iter != end; ++iter, ++count) {}
-    return count;
-}
-
 struct Person {
     string first_name;
     string last_name;
@@ -28,11 +21,11 @@ struct Person {
 
 double mean_filter_age(const vector<pair<Person, int>> &people) {
     auto ages = people
-                | views::filter([](const pair<Person, int>& curr) { return curr.second >= 12 && curr.second <= 65; })
-                | views::transform([](const pair<Person, int>& curr) { return curr.second; });
+                | views::values
+                | views::filter([](int age) { return age >= 12 && age <= 65; });
 
-    auto ages_sum = 1.0 * sum(ages.begin(), ages.end());
-    auto ages_count = count(ages.begin(), ages.end());
+    double ages_sum =  sum(ages.begin(), ages.end());
+    auto ages_count = count_if(ages.begin(), ages.end(), [](auto) { return true; });
 
     return ages_sum / ages_count;
 }

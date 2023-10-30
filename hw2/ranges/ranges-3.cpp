@@ -33,7 +33,7 @@ int main() {
 
     auto filter_people = people
                          | views::take(4)
-                         | views::transform([](pair<Person, int> &curr) { return curr.first; });
+                         | views::keys;
 
     myCopy(filter_people.begin(), filter_people.end(), ostream_iterator<Person>(cout, "\n"));
 
