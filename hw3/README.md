@@ -16,7 +16,10 @@
 
 # [Unique-binary-search-trees-ii](https://leetcode.com/problems/unique-binary-search-trees-ii/description/)
 
+Применяем алгоритм поиска компонент связности с помощью dfs
 
+Если текущее не посещенное поле это "земля", то запускаем с него обход и отмечаем всю достижимую землю как visited - это первая компонента связности.
+Повторяем, пока не останется не посещенной земли, попутно подсчитывая кол-во запусков
 
 # [Number-of-islands](https://leetcode.com/problems/number-of-islands/description/)
 
