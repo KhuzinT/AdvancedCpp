@@ -17,7 +17,12 @@
 
 # [Unique-binary-search-trees-ii](https://leetcode.com/problems/unique-binary-search-trees-ii/description/)
 
+Реализуем рекурсивный подход
 
+Используем функцию, которая генерирует все структурно-уникальные BST, содержащие узлы от min до max включительно.
+Внутри этой функции проходим по всем числам от min до max и рекурсивно вызываем функцию для левого и правого узлов
+
+Результат работы функции от 1 до n - ответ
 
 # [Number-of-islands](https://leetcode.com/problems/number-of-islands/description/)
 
