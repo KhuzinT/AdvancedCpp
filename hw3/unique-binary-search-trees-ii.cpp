@@ -1,43 +1,46 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 using namespace std;
 
 
 struct TreeNode {
     int val;
-    TreeNode *left;
-    TreeNode *right;
+    unique_ptr<TreeNode> left;
+    unique_ptr<TreeNode> right;
 
     TreeNode() : val(0), left(nullptr), right(nullptr) {}
 
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 
-    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+    TreeNode(int x, unique_ptr<TreeNode> left, unique_ptr<TreeNode> right)
+            : val(x), left(std::move(left)), right(std::move(right)) {}
 };
 
 class Solution {
 public:
-    vector<TreeNode *> generateTrees(int n) {
+    vector<unique_ptr<TreeNode>> generateTrees(int n) {
         return generateTreesByInterval(1, n);
     }
 
 private:
 
     // функция генерирует все структурно-уникальные BST, которые хранят значения от min до max включительно
-    vector<TreeNode *> generateTreesByInterval(int min, int max) {
-        if (min > max) {
-            return {nullptr};
-        }
+    vector<unique_ptr<TreeNode>> generateTreesByInterval(int min, int max) {
+        vector<unique_ptr<TreeNode>> res;
 
-        vector<TreeNode *> res;
+        if (min > max) {
+            res.push_back(nullptr);
+            return res;
+        }
 
         // проходим по всем числам от min до max и вызываем
         // функцию снова для левого и правого узла
         for (int curr = min; curr <= max; ++curr) {
-            for (TreeNode *left: generateTreesByInterval(min, curr - 1)) {
-                for (TreeNode *right: generateTreesByInterval(curr + 1, max)) {
-                    res.push_back(new TreeNode(curr, left, right));
+            for (auto &left: generateTreesByInterval(min, curr - 1)) {
+                for (auto &right: generateTreesByInterval(curr + 1, max)) {
+                    res.push_back(make_unique<TreeNode>(curr, std::move(left), std::move(right)));
                 }
             }
         }
