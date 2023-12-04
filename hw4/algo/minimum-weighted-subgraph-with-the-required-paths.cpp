@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cassert>
 #include <numeric>
+#include <queue>
 #include <vector>
-#include <set>
 #include <tuple>
 
 using namespace std;
@@ -54,22 +54,24 @@ private:
         auto dist = vector<DistT>(graph.getSize(), infty);
         dist[start] = 0;
 
-        set<EndPoint> queue;
-        queue.insert(EndPoint{start, dist[start]});
+        priority_queue<EndPoint> queue;
+        queue.push(EndPoint{start, dist[start]});
 
         while (!queue.empty()) {
-            VertexT curr = queue.begin()->vertex;
-            queue.erase(queue.begin());
+            VertexT curr = queue.top().vertex;
+            WeightT curr_w = queue.top().weight;
+            queue.pop();
+
+            if (curr_w != dist[curr]) {
+                continue;
+            }
 
             for (auto end_point: graph.getNeighbors(curr)) {
                 VertexT next = end_point.vertex;
                 WeightT weight = end_point.weight;
                 if (dist[curr] + weight < dist[next]) {
-                    queue.erase(EndPoint{next, dist[next]});
-
                     dist[next] = dist[curr] + weight;
-
-                    queue.insert(EndPoint{next, dist[next]});
+                    queue.push(EndPoint{next, dist[next]});
                 }
             }
         }
