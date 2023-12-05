@@ -58,19 +58,18 @@ private:
         queue.push(EndPoint{start, dist[start]});
 
         while (!queue.empty()) {
-            VertexT curr = queue.top().vertex;
-            WeightT curr_w = queue.top().weight;
+            auto curr = queue.top();
             queue.pop();
 
-            if (curr_w != dist[curr]) {
+            if (curr.weight != dist[curr.vertex]) {
                 continue;
             }
 
-            for (auto end_point: graph.getNeighbors(curr)) {
+            for (auto end_point: graph.getNeighbors(curr.vertex)) {
                 VertexT next = end_point.vertex;
                 WeightT weight = end_point.weight;
-                if (dist[curr] + weight < dist[next]) {
-                    dist[next] = dist[curr] + weight;
+                if (dist[curr.vertex] + weight < dist[next]) {
+                    dist[next] = dist[curr.vertex] + weight;
                     queue.push(EndPoint{next, dist[next]});
                 }
             }

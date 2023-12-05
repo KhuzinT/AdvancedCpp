@@ -1,13 +1,91 @@
 #include <iostream>
 #include <cassert>
 #include <numeric>
+#include <queue>
 #include <vector>
 #include <tuple>
 
 using namespace std;
 
-
 class Solution {
+private:
+
+    using VertexT = int32_t;
+    using WeightT = int32_t;
+
+    using DistT = int32_t;
+    const DistT infty = INT32_MAX;
+
+    // структура для хранения конца и веса ребра
+    struct EndPoint {
+        VertexT vertex;
+        WeightT weight;
+
+        bool operator>(const EndPoint &other) const {
+            return std::tie(weight, vertex) > std::tie(other.weight, other.vertex);
+        }
+    };
+
+public:
+
+    // используем алгоритм Прима
+    int minCostConnectPoints(vector<vector<int>> &points) {
+        VertexT size = points.size();
+
+        priority_queue<EndPoint, vector<EndPoint>, greater<>> queue;
+
+        // заполняем очередь
+        auto start = points[0];
+        for (VertexT idx = 1; idx < size; ++idx) {
+            auto curr = points[idx];
+            auto weight = abs(start[0] - curr[0]) + abs(start[1] - curr[1]);
+
+            queue.push(EndPoint{idx, weight});
+        }
+
+        DistT res = 0;
+
+        // отслеживаем уже посещенные вершины
+        vector<bool> visited(size, false);
+
+        // кол-во вершин в МОД
+        int vertex_count = 1;
+        while (vertex_count < size) {
+            auto curr = queue.top();
+            queue.pop();
+
+            // если вершина уже добавлена в МОД, то скип
+            if (visited[curr.vertex]) {
+                continue;
+            }
+
+            // добавляем вершину в МОД
+            visited[curr.vertex] = true;
+            ++vertex_count;
+
+            // обновляем ответ
+            res += curr.weight;
+
+            // добавляем в очередь непосещенные вершины
+            auto curr_point = points[curr.vertex];
+            for (VertexT idx = 1; idx < size; ++idx) {
+                if (visited[idx]) {
+                    continue;
+                }
+                auto next = points[idx];
+                auto weight = abs(curr_point[0] - next[0]) + abs(curr_point[1] - next[1]);
+
+                queue.push(EndPoint{idx, weight});
+            }
+        }
+
+        return res;
+    }
+
+};
+
+
+class OldSolution {
 public:
 
     // используем алгоритм Крускала с DSU
