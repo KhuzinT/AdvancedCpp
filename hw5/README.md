@@ -12,3 +12,12 @@
 
 # [Find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree](https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/description/)
 
+1) Используем алгоритм Крускала с DSU чтобы найти вес МОД
+
+2) Идем по ребрам и пытаемся построить МОД без текущего ребра. 
+Если МОД нельзя построить или его вес вырос, то ребро - критическое
+
+3) Идем по ребрам и включаем в МОД текущее ребро. 
+Если вес МОД не изменился, то ребро - псевдокритическое
+
+Асимптотика - долго
