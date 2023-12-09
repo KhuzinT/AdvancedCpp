@@ -16,72 +16,100 @@ private:
     using DistT = int32_t;
     const DistT infty = INT32_MAX;
 
-    // структура для хранения конца и веса ребра
-    struct EndPoint {
-        VertexT vertex;
-        WeightT weight;
+    // граф на матрице смежности
+    class Graph {
+    private:
 
-        bool operator>(const EndPoint &other) const {
-            return std::tie(weight, vertex) > std::tie(other.weight, other.vertex);
+        vector<vector<WeightT>> matrix_;
+
+    public:
+
+        explicit Graph(const VertexT &size) : matrix_(size, vector<WeightT>(size, INT32_MAX)) {}
+
+        void addEdge(const VertexT &begin, const VertexT &end, const WeightT &weight = 1) {
+            matrix_[begin][end] = weight;
+        }
+
+        [[nodiscard]] WeightT getEdgeWeight(const VertexT &begin, const VertexT &end) const {
+            return matrix_[begin][end];
+        }
+
+        [[nodiscard]] VertexT getSize() const {
+            return matrix_.size();
         }
     };
 
-public:
+    // алгоритм Прима для плотных графов за O(n^2)
+    WeightT PrimAlgorithm(const Graph &graph) {
+        VertexT size = graph.getSize();
 
-    // используем алгоритм Прима
-    int minCostConnectPoints(vector<vector<int>> &points) {
-        VertexT size = points.size();
-
-        priority_queue<EndPoint, vector<EndPoint>, greater<>> queue;
-
-        // заполняем очередь
-        auto start = points[0];
-        for (VertexT idx = 1; idx < size; ++idx) {
-            auto curr = points[idx];
-            auto weight = abs(start[0] - curr[0]) + abs(start[1] - curr[1]);
-
-            queue.push(EndPoint{idx, weight});
-        }
-
-        DistT res = 0;
-
-        // отслеживаем уже посещенные вершины
+        // отслеживаем непосещенные вершины
         vector<bool> visited(size, false);
 
-        // кол-во вершин в МОД
-        int vertex_count = 1;
-        while (vertex_count < size) {
-            auto curr = queue.top();
-            queue.pop();
+        // массив с весом наименьшего ребра из вершины
+        vector<WeightT> min_weight(size, infty);
+        min_weight[0] = 0;
 
-            // если вершина уже добавлена в МОД, то скип
-            if (visited[curr.vertex]) {
-                continue;
-            }
+        WeightT res = 0;
+        for (int idx = 0; idx < size; ++idx) {
+            VertexT curr = infty;
 
-            // добавляем вершину в МОД
-            visited[curr.vertex] = true;
-            ++vertex_count;
-
-            // обновляем ответ
-            res += curr.weight;
-
-            // добавляем в очередь непосещенные вершины
-            auto curr_point = points[curr.vertex];
-            for (VertexT idx = 1; idx < size; ++idx) {
-                if (visited[idx]) {
+            // ищем вершину с минимальным весом
+            for (VertexT next = 0; next < size; ++next) {
+                // проверяем, что вершина еще не в МОД
+                if (visited[next]) {
                     continue;
                 }
-                auto next = points[idx];
-                auto weight = abs(curr_point[0] - next[0]) + abs(curr_point[1] - next[1]);
 
-                queue.push(EndPoint{idx, weight});
+                // если curr еще не определена, то берем любую
+                if (curr == infty) {
+                    curr = next;
+                    continue;
+                }
+
+                // сравниваем веса
+                if (min_weight[next] < min_weight[curr]) {
+                    curr = next;
+                }
+            }
+
+            // добавляем вершину в ответ
+            visited[curr] = true;
+            res += min_weight[curr];
+
+            // обновляем массив наименьших весов
+            for (VertexT next = 0; next < size; ++next) {
+                min_weight[next] = min(min_weight[next], graph.getEdgeWeight(curr, next));
             }
         }
 
         return res;
     }
 
+public:
+
+    int minCostConnectPoints(vector<vector<int>> &points) {
+        VertexT size = points.size();
+
+        // создаем граф на матрице смежности
+        auto graph = Graph(size);
+
+        // добавляем ребра
+        for (int idx = 0; idx < size; ++idx) {
+            auto curr = points[idx];
+            for (int pos = 0; pos < size; ++pos) {
+                auto next = points[pos];
+
+                auto weight = abs(curr[0] - next[0]) + abs(curr[1] - next[1]);
+
+                graph.addEdge(idx, pos, weight);
+                graph.addEdge(pos, idx, weight);
+            }
+        }
+
+        // считаем вес МОД с помощью алгоритма Прима
+        return PrimAlgorithm(graph);
+    }
 };
 
 
@@ -188,7 +216,11 @@ int main() {
 
     {
         vector<vector<int>> points = {
-                {0, 0}, {2, 2}, {3, 10}, {5, 2}, {7, 0}
+                {0, 0},
+                {2, 2},
+                {3, 10},
+                {5, 2},
+                {7, 0}
         };
         auto output = sol.minCostConnectPoints(points);
 
@@ -199,7 +231,9 @@ int main() {
 
     {
         vector<vector<int>> points = {
-                {3, 12}, {-2, 5}, {-4, 1}
+                {3,  12},
+                {-2, 5},
+                {-4, 1}
         };
         auto output = sol.minCostConnectPoints(points);
 
