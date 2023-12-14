@@ -13,35 +13,11 @@ private:
     using VertexT = int32_t;
     using WeightT = int32_t;
 
-    using DistT = int32_t;
-    const DistT infty = INT32_MAX;
-
-    // граф на матрице смежности
-    class Graph {
-    private:
-
-        vector<vector<WeightT>> matrix_;
-
-    public:
-
-        explicit Graph(const VertexT &size) : matrix_(size, vector<WeightT>(size, INT32_MAX)) {}
-
-        void addEdge(const VertexT &begin, const VertexT &end, const WeightT &weight = 1) {
-            matrix_[begin][end] = weight;
-        }
-
-        [[nodiscard]] WeightT getEdgeWeight(const VertexT &begin, const VertexT &end) const {
-            return matrix_[begin][end];
-        }
-
-        [[nodiscard]] VertexT getSize() const {
-            return matrix_.size();
-        }
-    };
+    const WeightT infty = INT32_MAX;
 
     // алгоритм Прима для плотных графов за O(n^2)
-    WeightT PrimAlgorithm(const Graph &graph) {
-        VertexT size = graph.getSize();
+    WeightT PrimAlgorithm(const vector<vector<int>> &points) {
+        VertexT size = points.size();
 
         // отслеживаем непосещенные вершины
         vector<bool> visited(size, false);
@@ -79,7 +55,12 @@ private:
 
             // обновляем массив наименьших весов
             for (VertexT next = 0; next < size; ++next) {
-                min_weight[next] = min(min_weight[next], graph.getEdgeWeight(curr, next));
+                auto curr_point = points[curr];
+                auto next_point = points[next];
+
+                auto weight = abs(curr_point[0] - next_point[0]) + abs(curr_point[1] - next_point[1]);
+
+                min_weight[next] = min(min_weight[next], weight);
             }
         }
 
@@ -89,26 +70,8 @@ private:
 public:
 
     int minCostConnectPoints(vector<vector<int>> &points) {
-        VertexT size = points.size();
-
-        // создаем граф на матрице смежности
-        auto graph = Graph(size);
-
-        // добавляем ребра
-        for (int idx = 0; idx < size; ++idx) {
-            auto curr = points[idx];
-            for (int pos = 0; pos < size; ++pos) {
-                auto next = points[pos];
-
-                auto weight = abs(curr[0] - next[0]) + abs(curr[1] - next[1]);
-
-                graph.addEdge(idx, pos, weight);
-                graph.addEdge(pos, idx, weight);
-            }
-        }
-
         // считаем вес МОД с помощью алгоритма Прима
-        return PrimAlgorithm(graph);
+        return PrimAlgorithm(points);
     }
 };
 
