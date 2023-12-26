@@ -55,12 +55,13 @@ private:
 
             // обновляем массив наименьших весов
             for (VertexT next = 0; next < size; ++next) {
-                auto curr_point = points[curr];
-                auto next_point = points[next];
+                // если вершина уже посещена, то веса можно не обновлять
+                if (visited[next]) {
+                    continue;
+                }
 
-                auto weight = abs(curr_point[0] - next_point[0]) + abs(curr_point[1] - next_point[1]);
-
-                min_weight[next] = min(min_weight[next], weight);
+                min_weight[next] = min(min_weight[next],
+                                       abs(points[curr][0] - points[next][0]) + abs(points[curr][1] - points[next][1]));
             }
         }
 
